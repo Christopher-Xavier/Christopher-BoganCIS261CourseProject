@@ -1,0 +1,4 @@
+from_date|to_date|name|hours|hourly_rate|tax_rate
+07/22/2000|06/5/2024|Christopher b|45.0|20.0|0.8
+02/01/2000|07/12/2020|Chad Bossman|1000.0|20.0|0.2
+07/12/2020|07/20/2024|Christopher Nicegy|120.0|20.0|0.2
