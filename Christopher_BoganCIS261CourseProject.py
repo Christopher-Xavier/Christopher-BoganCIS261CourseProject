@@ -86,15 +86,18 @@ def generate_report(filename="employee_data.txt"):
     totals = {'total_employees': 0, 'total_hours': 0, 'total_overtime_hours': 0, 'total_tax': 0, 'total_net_pay': 0}
     with open(filename, "r") as file:
         for line in file:
-            employee = parse_employee_record(line)
-            if from_date_str.lower() == 'all' or employee['from_date'] == from_date_str:
-                calculate_pay([employee])
-                display_employee_info([employee])
-                totals['total_employees'] += 1
-                totals['total_hours'] += employee['regular_hours']
-                totals['total_overtime_hours'] += employee['overtime_hours']
-                totals['total_tax'] += employee['income_tax']
-                totals['total_net_pay'] += employee['net_pay']
+            try:
+                employee = parse_employee_record(line)
+                if from_date_str.lower() == 'all' or employee['from_date'] == from_date_str:
+                    calculate_pay([employee])
+                    display_employee_info([employee])
+                    totals['total_employees'] += 1
+                    totals['total_hours'] += employee['regular_hours']
+                    totals['total_overtime_hours'] += employee['overtime_hours']
+                    totals['total_tax'] += employee['income_tax']
+                    totals['total_net_pay'] += employee['net_pay']
+            except ValueError as e:
+                print(f"Error processing record: {line.strip()} - {e}")
 
     print(f"Total employees: {totals['total_employees']}, Total regular hours: {totals['total_hours']}, "
           f"Total overtime hours: {totals['total_overtime_hours']}, Total tax: {totals['total_tax']}, "
@@ -106,9 +109,13 @@ try:
     while True:
         from_date, to_date = get_dates()
         name = input("Enter the employee's name: ")
-        hours = float(input("Enter the total hours worked: "))
-        hourly_rate = float(input("Enter the hourly rate: "))
-        tax_rate = float(input("Enter the income tax rate (as a decimal): "))
+        try:
+            hours = float(input("Enter the total hours worked: "))
+            hourly_rate = float(input("Enter the hourly rate: "))
+            tax_rate = float(input("Enter the income tax rate (as a decimal): "))
+        except ValueError:
+            print("Invalid input. Please enter numeric values for hours, hourly rate, and tax rate.")
+            continue
         employee_data.append({
             'from_date': from_date,
             'to_date': to_date,
