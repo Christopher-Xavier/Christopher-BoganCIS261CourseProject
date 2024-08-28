@@ -1,5 +1,63 @@
 import datetime
 
+# Part 1: Initial Application
+
+def open_file():
+    with open('user_data.txt', 'a+') as file:
+        file.seek(0)
+        users = [line.split('|')[0] for line in file.readlines()]
+    return users
+
+def add_user(users):
+    while True:
+        user_id = input("Enter User ID (or type 'End' to finish): ")
+        if user_id.lower() == 'end':
+            break
+        if user_id in users:
+            print("User ID already exists.")
+            continue
+        password = input("Enter Password: ")
+        auth_code = input("Enter Authorization Code (Admin/User): ")
+        if auth_code not in ['Admin', 'User']:
+            print("Invalid Authorization Code.")
+            continue
+        with open('user_data.txt', 'a') as file:
+            file.write(f"{user_id}|{password}|{auth_code}\n")
+        users.append(user_id)
+
+def display_users():
+    with open('user_data.txt', 'r') as file:
+        for line in file:
+            print(line.strip())
+
+# Part 2: Updating the Application
+
+class Login:
+    def __init__(self, user_id, password, authorization):
+        self.user_id = user_id
+        self.password = password
+        self.authorization = authorization
+
+def login_process():
+    users = []
+    with open('user_data.txt', 'r') as file:
+        for line in file:
+            user_id, password, auth_code = line.strip().split('|')
+            users.append(Login(user_id, password, auth_code))
+    user_id = input("Enter User ID: ")
+    password = input("Enter Password: ")
+    for user in users:
+        if user.user_id == user_id and user.password == password:
+            print(f"Welcome {user_id}!")
+            return
+    print("Invalid User ID or Password.")
+
+# Example usage
+users = open_file()
+add_user(users)
+display_users()
+login_process()
+
 # Function to get dates in the format mm/dd/yyyy
 def get_dates():
     while True:
