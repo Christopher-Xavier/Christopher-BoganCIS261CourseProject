@@ -42,8 +42,12 @@ def login_process():
     users = []
     with open('user_data.txt', 'r') as file:
         for line in file:
-            user_id, password, auth_code = line.strip().split('|')
-            users.append(Login(user_id, password, auth_code))
+            parts = line.strip().split('|')
+            if len(parts) == 3:
+                user_id, password, auth_code = parts
+                users.append(Login(user_id, password, auth_code))
+            else:
+                print(f"Skipping invalid line: {line.strip()}")
     user_id = input("Enter User ID: ")
     password = input("Enter Password: ")
     for user in users:
@@ -104,34 +108,31 @@ def display_totals(employee_data):
         'total_employees': len(employee_data),
         'total_hours': sum(employee['regular_hours'] for employee in employee_data),
         'total_overtime_hours': sum(employee['overtime_hours'] for employee in employee_data),
-        'total_tax': sum(employee['income_tax'] for employee in employee_data),
+        'total_gross_pay': sum(employee['gross_pay'] for employee in employee_data),
+        'total_income_tax': sum(employee['income_tax'] for employee in employee_data),
         'total_net_pay': sum(employee['net_pay'] for employee in employee_data)
     }
-    print(f"Total employees: {totals['total_employees']}, Total regular hours: {totals['total_hours']}, "
-          f"Total overtime hours: {totals['total_overtime_hours']}, Total tax: {totals['total_tax']}, "
-          f"Total net pay: {totals['total_net_pay']}")
+    print(f"Total Employees: {totals['total_employees']}")
+    print(f"Total Hours: {totals['total_hours']}")
+    print(f"Total Overtime Hours: {totals['total_overtime_hours']}")
+    print(f"Total Gross Pay: {totals['total_gross_pay']}")
+    print(f"Total Income Tax: {totals['total_income_tax']}")
+    print(f"Total Net Pay: {totals['total_net_pay']}")
 
 # Function to save employee data to a file
 def save_to_file(employee_data, filename="employee_data.txt"):
-    with open(filename, "a") as file:
-        file.writelines(
-            f"{employee['from_date']}|{employee['to_date']}|{employee['name']}|{employee['hours']}|{employee['hourly_rate']}|{employee['tax_rate']}\n"
-            for employee in employee_data
-        )
+    with open(filename, 'w') as file:
+        for employee in employee_data:
+            line = f"{employee['from_date']}|{employee['to_date']}|{employee['name']}|{employee['hours']}|{employee['hourly_rate']}|{employee['tax_rate']}\n"
+            file.write(line)
 
-# Function to parse employee record from file
-def parse_employee_record(record):
-    from_date_record, to_date_record, name, hours, hourly_rate, tax_rate = record.strip().split('|')
-    return {
-        'from_date': from_date_record,
-        'to_date': to_date_record,
-        'name': name,
-        'hours': float(hours),
-        'hourly_rate': float(hourly_rate),
-        'tax_rate': float(tax_rate)
-    }
+# Example usage for employee data
+employee_data = [
+    {'from_date': '08/01/2024', 'to_date': '08/15/2024', 'name': 'John Doe', 'hours': 45, 'hourly_rate': 20, 'tax_rate': 0.2},
+    {'from_date': '08/01/2024', 'to_date': '08/15/2024', 'name': 'Jane Smith', 'hours': 38, 'hourly_rate': 22, 'tax_rate': 0.18}
+]
 
-# Function to read employee data from a file and generate a report
+calculate_pay(employee_data)
 def generate_report(filename="employee_data.txt"):
     from_date_str = input("Enter the from date for the report (mm/dd/yyyy) or 'All' to display all records: ")
     if from_date_str.lower() != 'all':
@@ -145,7 +146,7 @@ def generate_report(filename="employee_data.txt"):
     with open(filename, "r") as file:
         for line in file:
             try:
-                employee = parse_employee_record(line)
+                employee = parse_employee_record(line) # type: ignore
                 if from_date_str.lower() == 'all' or employee['from_date'] == from_date_str:
                     calculate_pay([employee])
                     display_employee_info([employee])
@@ -194,6 +195,3 @@ save_to_file(employee_data)
 calculate_pay(employee_data)
 display_employee_info(employee_data)
 display_totals(employee_data)
-
-# Generate report
-generate_report()
