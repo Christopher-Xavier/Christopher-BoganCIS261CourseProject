@@ -2,13 +2,14 @@ import datetime
 
 # Part 1: Initial Application
 
+
 def open_file():
     with open('user_data.txt', 'a+') as file:
         file.seek(0)
         users = [line.split('|')[0] for line in file.readlines()]
     return users
 
-def add_user(users):
+def create_users(users):
     while True:
         user_id = input("Enter User ID (or type 'End' to finish): ")
         if user_id.lower() == 'end':
@@ -58,7 +59,7 @@ def login_process():
 
 # Example usage
 users = open_file()
-add_user(users)
+create_users(users)
 display_users()
 login_process()
 

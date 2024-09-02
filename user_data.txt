@@ -7,3 +7,7 @@ mary poopings|12345|User
 CHRIS|1234|Admin
 jAMEb|12345|Admin
 cbogab|15222|Admin
+cBOGAN|12345|Admin
+Sallyp|23456|User
+jIMWEST21|54321|User
+bob|1234|User
